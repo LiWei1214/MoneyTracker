@@ -2,26 +2,25 @@ import React from "react";
 import { View, Text, TouchableHighlight, Image, TouchableOpacity } from 'react-native';
 import styles from "../stylesheets/SettingStyles";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { User, Appearance, DataPrivacy, Notification, Help } from "../Screens";
 import { createStackNavigator } from "@react-navigation/stack";
 
 export default function Settings({ navigation }){
     const Stack = createStackNavigator();
 
     const navigateToEditAccount = () => {
-        navigation.navigate("Profile")
+        navigation.navigate("LwApp")
     };
 
     const navigateToEditAppearance = () => {
-        navigation.navigate("Appearance")
+        navigation.navigate("LwHome")
     };
 
     const navigateToDataPrivacy = () => {
-        navigation.navigate("Data")
+        navigation.navigate("LwMonth")
     };
 
     const navigateToEditNotification = () => {
-        navigation.navigate("Notification")
+        navigation.navigate("LwTrans")
     };
 
     const navigateToHelp = () => {
