@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal,TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Modal, TextInput, Button, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import styles from './Styles.js';
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
+// const Tab = createBottomTabNavigator();
 
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -66,15 +66,15 @@ const TransactionScreen = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [newTransaction, setNewTransaction] = useState({categories: '', detail: '', amount: ''});
+  const [newTransaction, setNewTransaction] = useState({ categories: '', detail: '', amount: '' });
 
   const [transactions, setTransactions] = useState([
     { month: 0, detail: 'Bought groceries', amount: 'RM50', icon: 'local-grocery-store' },
     { month: 0, detail: 'KUNKUN', amount: 'RM50', icon: 'fastfood' },
     { month: 0, detail: 'OK', amount: 'RM50', icon: 'emoji-transportation' },
-    { month: 0, detail: 'AI', amount: 'RM50' , icon: 'sports-soccer'},
-    { month: 1, detail: 'Paid rent', amount: 'RM1200' , icon: 'local-grocery-store'},
-    { month: 2, detail: 'Car insurance', amount: 'RM100' , icon: 'local-grocery-store'},
+    { month: 0, detail: 'AI', amount: 'RM50', icon: 'sports-soccer' },
+    { month: 1, detail: 'Paid rent', amount: 'RM1200', icon: 'local-grocery-store' },
+    { month: 2, detail: 'Car insurance', amount: 'RM100', icon: 'local-grocery-store' },
     // Add more transactions for each month
   ]);
 
@@ -84,10 +84,10 @@ const TransactionScreen = () => {
 
   const addTransaction = () => {
     // if (newTransaction.category && newTransaction.detail && newTransaction.amount) {
-      setTransactions([...transactions, { ...newTransaction, month: selectedMonth }]);
-      setModalVisible(false);
-      setNewTransaction({ category: '', detail: '', amount: '' }); // Reset after adding
-      setSelectedCategory(null); // Reset category after adding
+    setTransactions([...transactions, { ...newTransaction, month: selectedMonth }]);
+    setModalVisible(false);
+    setNewTransaction({ category: '', detail: '', amount: '' }); // Reset after adding
+    setSelectedCategory(null); // Reset category after adding
     // } else{
     //   alert('Please fill out all field and select a category');
     // }
@@ -96,15 +96,15 @@ const TransactionScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Transactions</Text>
-      <MonthSelector 
-        selectedMonth={selectedMonth} 
-        onSelectMonth={setSelectedMonth} 
+      <MonthSelector
+        selectedMonth={selectedMonth}
+        onSelectMonth={setSelectedMonth}
       />
       <View style={styles.bodyContainer}>
         {filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (
             <View key={index} style={styles.transactionItem}>
-                <MaterialIcons name={transaction.icon} size={24} color="#8DB580" style={styles.transactionIcon} />
+              <MaterialIcons name={transaction.icon} size={24} color="#8DB580" style={styles.transactionIcon} />
               <Text style={styles.transactionDetail}>{transaction.detail}</Text>
               <Text style={styles.transactionAmount}>{transaction.amount}</Text>
             </View>
@@ -126,7 +126,7 @@ const TransactionScreen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-          <ScrollView
+            <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.categoryContainer}
@@ -158,7 +158,7 @@ const TransactionScreen = () => {
               keyboardType="numeric"
               style={styles.input}
             />
-          
+
             <TouchableOpacity
               style={styles.submitButton}
               onPress={addTransaction}
@@ -177,82 +177,107 @@ const TransactionScreen = () => {
     </View>
   );
 };
-const HomeScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Home Screen</Text>
-  </View>
-);
+// const HomeScreen = () => (
+//   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//     <Text>Home Screen</Text>
+//   </View>
+// );
 
-const BudgetScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Budget Screen</Text>
-  </View>
-);
+// const BudgetScreen = () => (
+//   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//     <Text>Budget Screen</Text>
+//   </View>
+// );
 
-const SettingsScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Text>Settings Screen</Text>
-  </View>
-);
+// const SettingsScreen = () => (
+//   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+//     <Text>Settings Screen</Text>
+//   </View>
+// );
 
-const TransactionStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen 
-      name="Transaction" 
-      component={TransactionScreen}
-      options={({ navigation }) => ({
-        headerTitle: " ",
-        headerRight: () => (
-          <View style={{ flexDirection: 'row', marginRight: 15 }}>
-            <TouchableOpacity
-              onPress={() => alert('Search pressed')}
-              style={{ marginRight: 15 }}
-            >
-              <Ionicons name="search" size={24} color="black" />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => alert('Filter pressed')}
-            >
-              <MaterialIcons name="filter-alt" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
-        ),
-      })}
-    />
-  </Stack.Navigator>
-);
+// const TransactionStack = () => (
+//   <Stack.Navigator>
+//     <Stack.Screen 
+//       name="Transaction" 
+//       component={TransactionScreen}
+//       options={({ navigation }) => ({
+//         headerTitle: " ",
+//         headerRight: () => (
+//           <View style={{ flexDirection: 'row', marginRight: 15 }}>
+//             <TouchableOpacity
+//               onPress={() => alert('Search pressed')}
+//               style={{ marginRight: 15 }}
+//             >
+//               <Ionicons name="search" size={24} color="black" />
+//             </TouchableOpacity>
+//             <TouchableOpacity
+//               onPress={() => alert('Filter pressed')}
+//             >
+//               <MaterialIcons name="filter-alt" size={24} color="black" />
+//             </TouchableOpacity>
+//           </View>
+//         ),
+//       })}
+//     />
+//   </Stack.Navigator>
+// );
+
+// const App = () => {
+//   return (
+//     <NavigationContainer>
+//       <Tab.Navigator
+//         screenOptions={({ route }) => ({
+//           tabBarIcon: ({ focused, color, size }) => {
+//             let iconName;
+
+//             if (route.name === 'Home') {
+//               iconName = focused ? 'home' : 'home-outline';
+//             } else if (route.name === 'Transactions') {
+//               iconName = focused ? 'list' : 'list-outline';
+//             } else if (route.name === 'Budget') {
+//               iconName = focused ? 'cash' : 'cash-outline';
+//             } else if (route.name === 'Settings') {
+//               iconName = focused ? 'settings' : 'settings-outline';
+//             }
+
+//             return <Ionicons name={iconName} size={size} color={color} />;
+//           },
+//           headerShown: false,
+//         })}
+//       >
+//         <Tab.Screen name="Home" component={HomeScreen} />
+//         <Tab.Screen name="Transactions" component={TransactionStack} />
+//         <Tab.Screen name="Budget" component={BudgetScreen} />
+//         <Tab.Screen name="Settings" component={SettingsScreen} />
+//       </Tab.Navigator>
+//     </NavigationContainer>
+//   );
+// };
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-
-            if (route.name === 'Home') {
-              iconName = focused ? 'home' : 'home-outline';
-            } else if (route.name === 'Transactions') {
-              iconName = focused ? 'list' : 'list-outline';
-            } else if (route.name === 'Budget') {
-              iconName = focused ? 'cash' : 'cash-outline';
-            } else if (route.name === 'Settings') {
-              iconName = focused ? 'settings' : 'settings-outline';
-            }
-
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
-          headerShown: false,
-        })}
-      >
-        <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Transactions" component={TransactionStack} />
-        <Tab.Screen name="Budget" component={BudgetScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
-      </Tab.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Transation"
+          component={TransactionScreen}
+          options={({ navigation }) => ({
+            headerTitle: " ",
+            headerRight: () => (
+              <View style={{ flexDirection: 'row', marginRight: 15 }}>
+                <TouchableOpacity onPress={() => alert('Search pressed')} style={{ marginRight: 15 }}>
+                  <Ionicons name="search" size={24} color="black" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => alert('Filter pressed')}>
+                  <MaterialIcons name="filter-alt" size={24} color="black" />
+                </TouchableOpacity>
+              </View>
+            ),
+          })}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
 export default App;
 
