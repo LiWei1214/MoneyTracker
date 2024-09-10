@@ -21,7 +21,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    height: 50, 
+    height: 50,
     paddingHorizontal: 5,
   },
 
@@ -55,22 +55,29 @@ export default StyleSheet.create({
   },
 
   transactionItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    flexDirection: 'row',             
+    justifyContent: 'space-between',  
+    alignItems: 'center',             
     backgroundColor: '#fff',
+    padding: 10,
     borderRadius: 8,
+    marginVertical: 5,
     shadowColor: '#000',
     shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 3,
-    marginBottom: 8,
+    shadowRadius: 10,
+    elevation: 2,
   },
 
   transactionDetail: {
+    flexDirection: 'row',    // If you have icons/text together in this section
+    alignItems: 'center',
     fontSize: 16,
     color: 'black',
+
+  },
+
+  transactionIcon: {
+    marginRight: 10,        // Space between icon and text
   },
 
   transactionAmount: {
@@ -137,7 +144,7 @@ export default StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 15,
     marginVertical: 10,
-    
+
   },
 
   selectedCategoryButton: {
@@ -164,6 +171,30 @@ export default StyleSheet.create({
     textAlign: 'center',
     padding: 10,
     textDecorationLine: 'underline'
-  }
+  },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  optionsModalContent: {
+    backgroundColor: 'white',
+    width: 250,
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  optionButton: {
+    paddingVertical: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  optionText: {
+    fontSize: 18,
+    color: 'black',
+  },
+
 });
 
