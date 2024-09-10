@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Modal, TextInput, Button, StyleSheet } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, Modal, TextInput, Button, StyleSheet, LogBox } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import styles from '../stylesheets/TransactionStyles';
+import { getDBConnection, createTransaction, getTransaction } from '../../data/db-service';
+
+LogBox.ignoreLogs([
+  'Non-serializable values were found in the navigation state',
+])
 
 const Stack = createStackNavigator();
-// const Tab = createBottomTabNavigator();
 
 const months = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -75,16 +78,27 @@ const TransactionScreen = () => {
     { month: 0, detail: 'AI', amount: 'RM50', icon: 'sports-soccer' },
     { month: 1, detail: 'Paid rent', amount: 'RM1200', icon: 'local-grocery-store' },
     { month: 2, detail: 'Car insurance', amount: 'RM100', icon: 'local-grocery-store' },
-    // Add more transactions for each month
   ]);
+
+  const _insertTransaction = async () => {
+    await createTransaction(await getDBConnection(selectedMonth, newTransaction.detail, newTransaction.amount, newTransaction.categories))
+  }
+
+  const _query = async () => {
+    setTransactions(await getTransaction(await getDBConnection()));
+  }
+
+  useEffect(() => {
+    _query();
+  },[]);
 
   const filteredTransactions = transactions.filter(
     transaction => transaction.month === selectedMonth
   );
 
   const addTransaction = () => {
-    // if (newTransaction.category && newTransaction.detail && newTransaction.amount) {
     setTransactions([...transactions, { ...newTransaction, month: selectedMonth }]);
+    _insertTransaction;
     setModalVisible(false);
     setNewTransaction({ category: '', detail: '', amount: '' }); // Reset after adding
     setSelectedCategory(null); // Reset category after adding
