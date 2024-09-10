@@ -67,6 +67,11 @@ const TransactionScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [newTransaction, setNewTransaction] = useState({ categories: '', detail: '', amount: '' });
+  const [editIndex, setEditIndex] = useState(null); // Tracks the index of the transaction being edited
+  const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+  const [selectedTransactionIndex, setSelectedTransactionIndex] = useState(null);
+  
+
 
   const [transactions, setTransactions] = useState([
     { month: 0, detail: 'Bought groceries', amount: 'RM50', icon: 'local-grocery-store' },
@@ -83,15 +88,66 @@ const TransactionScreen = () => {
   );
 
   const addTransaction = () => {
-    // if (newTransaction.category && newTransaction.detail && newTransaction.amount) {
-    setTransactions([...transactions, { ...newTransaction, month: selectedMonth }]);
-    setModalVisible(false);
-    setNewTransaction({ category: '', detail: '', amount: '' }); // Reset after adding
-    setSelectedCategory(null); // Reset category after adding
-    // } else{
-    //   alert('Please fill out all field and select a category');
-    // }
+    if (newTransaction.detail && newTransaction.amount && selectedCategory) {
+      const updatedTransaction = {
+        ...newTransaction,
+        month: selectedMonth,
+        icon: selectedCategory.icon,
+      };
+
+      if (editIndex !== null) {
+        // If editing, update the existing transaction
+        const updatedTransactions = [...transactions];
+        updatedTransactions[editIndex] = updatedTransaction;
+        setTransactions(updatedTransactions);
+        setEditIndex(null); // Reset edit index after updating
+      } else {
+        // If adding a new transaction
+        setTransactions([...transactions, updatedTransaction]);
+      }
+
+      // Reset modal and transaction details
+      setModalVisible(false);
+      setNewTransaction({ category: '', detail: '', amount: '' });
+      setSelectedCategory(null);
+    } else {
+      alert('Please fill out all fields and select a category');
+    }
+  };
+
+
+  const editTransaction = (index) => {
+    const transactionToEdit = transactions[index];
+    setNewTransaction({
+      detail: transactionToEdit.detail,
+      amount: transactionToEdit.amount,
+      category: transactionToEdit.category,
+    });
+    setSelectedCategory(categories.find(c => c.icon === transactionToEdit.icon)); // Select the correct category
+    setEditIndex(index); // Store the index of the transaction being edited
+    setModalVisible(true); // Open the modal for editing
+  };
+
+
+  // Delete transaction function
+  const deleteTransaction = (indexInFilteredTransactions) => {
+  // Find the actual index in the transactions array
+  const transactionToDelete = filteredTransactions[indexInFilteredTransactions];
+  
+  // Find the index in the main transactions array
+  const indexInAllTransactions = transactions.findIndex(
+    transaction => transaction === transactionToDelete
+  );
+
+  // Remove the transaction from the main transactions array
+  if (indexInAllTransactions !== -1) {
+    const updatedTransactions = [...transactions];
+    updatedTransactions.splice(indexInAllTransactions, 1);
+    setTransactions(updatedTransactions);
   }
+};
+
+
 
   return (
     <View style={styles.container}>
@@ -102,17 +158,64 @@ const TransactionScreen = () => {
       />
       <View style={styles.bodyContainer}>
         {filteredTransactions.length > 0 ? (
-          filteredTransactions.map((transaction, index) => (
-            <View key={index} style={styles.transactionItem}>
-              <MaterialIcons name={transaction.icon} size={24} color="#8DB580" style={styles.transactionIcon} />
-              <Text style={styles.transactionDetail}>{transaction.detail}</Text>
-              <Text style={styles.transactionAmount}>{transaction.amount}</Text>
-            </View>
-          ))
+          filteredTransactions.map((transaction, index) => {
+            return (
+              <View key={index} style={styles.transactionItem}>
+                <TouchableOpacity
+                  onPress={() => {
+                    setSelectedTransactionIndex(index);
+                    setOptionsModalVisible(true);
+                  }}
+                >
+                  <MaterialIcons name={transaction.icon} size={24} color="#8DB580" style={styles.transactionIcon} />
+                  <Text style={styles.transactionDetail}>{transaction.detail}</Text>
+                  <Text style={styles.transactionAmount}>{transaction.amount}</Text>
+                </TouchableOpacity>
+              </View>
+
+
+
+            );
+          })
         ) : (
           <Text style={styles.noTransactionsText}>No transactions for this month.</Text>
         )}
       </View>
+      <Modal
+        visible={optionsModalVisible}
+        transparent={true}
+        animationType="slide"
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.optionsModalContent}>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={() => {
+                editTransaction(selectedTransactionIndex);
+                setOptionsModalVisible(false);
+              }}
+            >
+              <Text style={styles.optionText}>Edit</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={() => {
+                deleteTransaction(selectedTransactionIndex);
+                setOptionsModalVisible(false);
+              }}
+            >
+              <Text style={styles.optionText}>Delete</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.optionButton}
+              onPress={() => setOptionsModalVisible(false)}
+            >
+              <Text style={styles.optionText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => setModalVisible(true)}
@@ -167,10 +270,14 @@ const TransactionScreen = () => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.cancelButton}
-              onPress={() => setModalVisible(false)}
+              onPress={() => {
+                setModalVisible(false);
+                setEditIndex(null); // Reset edit index on cancel
+              }}
             >
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
+
           </View>
         </View>
       </Modal>
