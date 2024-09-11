@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 10,
     backgroundColor: 'white',
   },
 
@@ -55,9 +55,9 @@ export default StyleSheet.create({
   },
 
   transactionItem: {
-    flexDirection: 'row',             
-    justifyContent: 'space-between',  
-    alignItems: 'center',             
+    flexDirection: 'row',             // Aligns content horizontally
+    justifyContent: 'space-between',  // Pushes amount to the right
+    alignItems: 'center',             // Centers items vertically
     backgroundColor: '#fff',
     padding: 10,
     borderRadius: 8,
@@ -68,16 +68,21 @@ export default StyleSheet.create({
     elevation: 2,
   },
 
-  transactionDetail: {
-    flexDirection: 'row',    // If you have icons/text together in this section
-    alignItems: 'center',
-    fontSize: 16,
-    color: 'black',
 
+  transactionLeft: {
+    flexDirection: 'row',             // Icon and text in one row
+    alignItems: 'center',
   },
 
+
+  transactionDetail: {
+    fontSize: 16,
+    color: 'black',
+  },
+
+
   transactionIcon: {
-    marginRight: 10,        // Space between icon and text
+    marginRight: 10,                  // Space between icon and text
   },
 
   transactionAmount: {
@@ -196,5 +201,12 @@ export default StyleSheet.create({
     color: 'black',
   },
 
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginVertical: 10,
+  }
 });
 
