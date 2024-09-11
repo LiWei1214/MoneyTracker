@@ -8,19 +8,19 @@ export default function Settings({ navigation }){
     const Stack = createStackNavigator();
 
     const navigateToEditAccount = () => {
-        navigation.navigate("LwApp")
+        navigation.navigate("Profile")
     };
 
     const navigateToEditAppearance = () => {
-        navigation.navigate("LwHome")
+        navigation.navigate("Appearance")
     };
 
     const navigateToDataPrivacy = () => {
-        navigation.navigate("LwMonth")
+        navigation.navigate("Data")
     };
 
     const navigateToEditNotification = () => {
-        navigation.navigate("LwTrans")
+        navigation.navigate("Notification")
     };
 
     const navigateToHelp = () => {
