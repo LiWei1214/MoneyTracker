@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Modal, TextInput, Button, StyleSheet } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -32,9 +32,23 @@ const categories = [
   { label: 'Other', icon: 'help' }
 ]
 
+
 const MonthSelector = ({ selectedMonth, onSelectMonth }) => {
+  const scrollViewRef = useRef(null);
+
+  useEffect(() => {
+    // Center the selected month in the scroll view when it is clicked
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollTo({
+        x: selectedMonth * 80 - 150, // Adjust width of each button
+        animated: true,
+      });
+    }
+  }, [selectedMonth]);
+
   return (
     <ScrollView
+      ref={scrollViewRef}
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.monthContainer}
@@ -70,22 +84,46 @@ const TransactionScreen = () => {
   const [editIndex, setEditIndex] = useState(null); // Tracks the index of the transaction being edited
   const [optionsModalVisible, setOptionsModalVisible] = useState(false);
   const [selectedTransactionIndex, setSelectedTransactionIndex] = useState(null);
-  
+  const [searchQuery, setSearchQuery] = useState('');
 
 
   const [transactions, setTransactions] = useState([
-    { month: 0, detail: 'Bought groceries', amount: 'RM50', icon: 'local-grocery-store' },
-    { month: 0, detail: 'KUNKUN', amount: 'RM50', icon: 'fastfood' },
-    { month: 0, detail: 'OK', amount: 'RM50', icon: 'emoji-transportation' },
-    { month: 0, detail: 'AI', amount: 'RM50', icon: 'sports-soccer' },
-    { month: 1, detail: 'Paid rent', amount: 'RM1200', icon: 'local-grocery-store' },
-    { month: 2, detail: 'Car insurance', amount: 'RM100', icon: 'local-grocery-store' },
+    // { month: 0, detail: 'Bought groceries', amount: 'RM50', icon: 'local-grocery-store' },
+    // { month: 0, detail: 'KUNKUN', amount: 'RM50', icon: 'fastfood' },
+    // { month: 0, detail: 'OK', amount: 'RM50', icon: 'emoji-transportation' },
+    // { month: 0, detail: 'AI', amount: 'RM50', icon: 'sports-soccer' },
+    // { month: 0, detail: 'Bought groceries', amount: 'RM50', icon: 'local-grocery-store' },
+    // { month: 0, detail: 'KUNKUN', amount: 'RM50', icon: 'fastfood' },
+    // { month: 0, detail: 'OK', amount: 'RM50', icon: 'emoji-transportation' },
+    // { month: 0, detail: 'AI', amount: 'RM50', icon: 'sports-soccer' },
+    // { month: 0, detail: 'Bought groceries', amount: 'RM50', icon: 'local-grocery-store' },
+    // { month: 0, detail: 'KUNKUN', amount: 'RM50', icon: 'fastfood' },
+    // { month: 0, detail: 'OK', amount: 'RM50', icon: 'emoji-transportation' },
+    // { month: 0, detail: 'AI', amount: 'RM50', icon: 'sports-soccer' },
+    // { month: 0, detail: 'Bought groceries', amount: 'RM50', icon: 'local-grocery-store' },
+    // { month: 0, detail: 'KUNKUN', amount: 'RM50', icon: 'fastfood' },
+    // { month: 0, detail: 'OK', amount: 'RM50', icon: 'emoji-transportation' },
+    // { month: 0, detail: 'AI', amount: 'RM50', icon: 'sports-soccer' },
+    // { month: 1, detail: 'Paid rent', amount: 'RM1200', icon: 'local-grocery-store' },
+    // { month: 2, detail: 'Car insurance', amount: 'RM100', icon: 'local-grocery-store' },
     // Add more transactions for each month
   ]);
 
-  const filteredTransactions = transactions.filter(
-    transaction => transaction.month === selectedMonth
-  );
+  const filteredTransactions = transactions.filter(transaction => {
+    const searchLower = searchQuery.toLowerCase();
+
+
+    const matchesSearchQuery = (
+      transaction.detail.toLowerCase().includes(searchLower) ||
+      transaction.amount.toString().includes(searchQuery)
+    );
+
+    const matchesCategory = selectedCategory ? transaction.icon === selectedCategory : true;
+
+    const matchesMonth = transaction.month === selectedMonth; // Filter by month
+
+    return matchesSearchQuery && matchesCategory && matchesMonth;
+  });
 
   const addTransaction = () => {
     if (newTransaction.detail && newTransaction.amount && selectedCategory) {
@@ -98,7 +136,10 @@ const TransactionScreen = () => {
       if (editIndex !== null) {
         // If editing, update the existing transaction
         const updatedTransactions = [...transactions];
-        updatedTransactions[editIndex] = updatedTransaction;
+        updatedTransactions[editIndex] = {
+          ...updatedTransaction,
+          month: transactions[editIndex].month, // Keep the same month as the original transaction
+        };
         setTransactions(updatedTransactions);
         setEditIndex(null); // Reset edit index after updating
       } else {
@@ -115,72 +156,93 @@ const TransactionScreen = () => {
     }
   };
 
+  const editTransaction = (filteredIndex) => {
+    const transactionToEdit = filteredTransactions[filteredIndex];
 
-  const editTransaction = (index) => {
-    const transactionToEdit = transactions[index];
+    const actualIndex = transactions.findIndex(
+      (transaction) => transaction === transactionToEdit
+    );
+
     setNewTransaction({
       detail: transactionToEdit.detail,
       amount: transactionToEdit.amount,
       category: transactionToEdit.category,
     });
     setSelectedCategory(categories.find(c => c.icon === transactionToEdit.icon)); // Select the correct category
-    setEditIndex(index); // Store the index of the transaction being edited
+    setEditIndex(actualIndex); // Store the index of the transaction being edited
     setModalVisible(true); // Open the modal for editing
   };
 
+  const cancelEdit = () => {
+    // Reset modal and transaction details, but do not alter the transaction list
+    setModalVisible(false);
+    setNewTransaction({ category: '', detail: '', amount: '' });
+    setSelectedCategory(null);
+    setEditIndex(null); // Reset the edit index
+  };
 
   // Delete transaction function
   const deleteTransaction = (indexInFilteredTransactions) => {
-  // Find the actual index in the transactions array
-  const transactionToDelete = filteredTransactions[indexInFilteredTransactions];
-  
-  // Find the index in the main transactions array
-  const indexInAllTransactions = transactions.findIndex(
-    transaction => transaction === transactionToDelete
-  );
+    // Find the actual index in the transactions array
+    const transactionToDelete = filteredTransactions[indexInFilteredTransactions];
 
-  // Remove the transaction from the main transactions array
-  if (indexInAllTransactions !== -1) {
-    const updatedTransactions = [...transactions];
-    updatedTransactions.splice(indexInAllTransactions, 1);
-    setTransactions(updatedTransactions);
-  }
-};
+    // Find the index in the main transactions array
+    const indexInAllTransactions = transactions.findIndex(
+      transaction => transaction === transactionToDelete
+    );
 
-
+    // Remove the transaction from the main transactions array
+    if (indexInAllTransactions !== -1) {
+      const updatedTransactions = [...transactions];
+      updatedTransactions.splice(indexInAllTransactions, 1);
+      setTransactions(updatedTransactions);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Transactions</Text>
-      <MonthSelector
-        selectedMonth={selectedMonth}
-        onSelectMonth={setSelectedMonth}
-      />
+      <View style={styles.monthSelectorContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search transactions..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <MonthSelector
+          selectedMonth={selectedMonth}
+          onSelectMonth={setSelectedMonth}
+        />
+      </View>
       <View style={styles.bodyContainer}>
-        {filteredTransactions.length > 0 ? (
-          filteredTransactions.map((transaction, index) => {
-            return (
-              <View key={index} style={styles.transactionItem}>
+        <ScrollView>
+          {filteredTransactions.length > 0 ? (
+            filteredTransactions.slice().reverse().map((transaction, reversedIndex) => {
+              const filteredIndex = filteredTransactions.length - 1 - reversedIndex;
+
+              return (
                 <TouchableOpacity
+                  key={filteredIndex}
+                  style={styles.transactionItem}
                   onPress={() => {
-                    setSelectedTransactionIndex(index);
+                    setSelectedTransactionIndex(filteredIndex);
                     setOptionsModalVisible(true);
                   }}
                 >
-                  <MaterialIcons name={transaction.icon} size={24} color="#8DB580" style={styles.transactionIcon} />
-                  <Text style={styles.transactionDetail}>{transaction.detail}</Text>
+                  <View style={styles.transactionLeft}>
+                    <MaterialIcons name={transaction.icon} size={24} color="#8DB580" style={styles.transactionIcon} />
+                    <Text style={styles.transactionDetail}>{transaction.detail}</Text>
+                  </View>
                   <Text style={styles.transactionAmount}>{transaction.amount}</Text>
                 </TouchableOpacity>
-              </View>
-
-
-
-            );
-          })
-        ) : (
-          <Text style={styles.noTransactionsText}>No transactions for this month.</Text>
-        )}
+              );
+            })
+          ) : (
+            <Text style={styles.noTransactionsText}>No transactions for this month.</Text>
+          )}
+        </ScrollView>
       </View>
+
       <Modal
         visible={optionsModalVisible}
         transparent={true}
@@ -270,121 +332,31 @@ const TransactionScreen = () => {
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.cancelButton}
-              onPress={() => {
-                setModalVisible(false);
-                setEditIndex(null); // Reset edit index on cancel
-              }}
+              onPress={cancelEdit}  // Use cancelEdit instead of inlining reset logic
             >
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
-
           </View>
         </View>
       </Modal>
     </View>
   );
 };
-// const HomeScreen = () => (
-//   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//     <Text>Home Screen</Text>
-//   </View>
-// );
 
-// const BudgetScreen = () => (
-//   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//     <Text>Budget Screen</Text>
-//   </View>
-// );
-
-// const SettingsScreen = () => (
-//   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-//     <Text>Settings Screen</Text>
-//   </View>
-// );
-
-// const TransactionStack = () => (
-//   <Stack.Navigator>
-//     <Stack.Screen 
-//       name="Transaction" 
-//       component={TransactionScreen}
-//       options={({ navigation }) => ({
-//         headerTitle: " ",
-//         headerRight: () => (
-//           <View style={{ flexDirection: 'row', marginRight: 15 }}>
-//             <TouchableOpacity
-//               onPress={() => alert('Search pressed')}
-//               style={{ marginRight: 15 }}
-//             >
-//               <Ionicons name="search" size={24} color="black" />
-//             </TouchableOpacity>
-//             <TouchableOpacity
-//               onPress={() => alert('Filter pressed')}
-//             >
-//               <MaterialIcons name="filter-alt" size={24} color="black" />
-//             </TouchableOpacity>
-//           </View>
-//         ),
-//       })}
-//     />
-//   </Stack.Navigator>
-// );
-
-// const App = () => {
-//   return (
-//     <NavigationContainer>
-//       <Tab.Navigator
-//         screenOptions={({ route }) => ({
-//           tabBarIcon: ({ focused, color, size }) => {
-//             let iconName;
-
-//             if (route.name === 'Home') {
-//               iconName = focused ? 'home' : 'home-outline';
-//             } else if (route.name === 'Transactions') {
-//               iconName = focused ? 'list' : 'list-outline';
-//             } else if (route.name === 'Budget') {
-//               iconName = focused ? 'cash' : 'cash-outline';
-//             } else if (route.name === 'Settings') {
-//               iconName = focused ? 'settings' : 'settings-outline';
-//             }
-
-//             return <Ionicons name={iconName} size={size} color={color} />;
-//           },
-//           headerShown: false,
-//         })}
-//       >
-//         <Tab.Screen name="Home" component={HomeScreen} />
-//         <Tab.Screen name="Transactions" component={TransactionStack} />
-//         <Tab.Screen name="Budget" component={BudgetScreen} />
-//         <Tab.Screen name="Settings" component={SettingsScreen} />
-//       </Tab.Navigator>
-//     </NavigationContainer>
-//   );
-// };
-
-const App = () => {
+export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
-          name="Transation"
+          name="Transaction"
           component={TransactionScreen}
-          options={({ navigation }) => ({
-            headerTitle: " ",
-            headerRight: () => (
-              <View style={{ flexDirection: 'row', marginRight: 15 }}>
-                <TouchableOpacity onPress={() => alert('Search pressed')} style={{ marginRight: 15 }}>
-                  <Ionicons name="search" size={24} color="black" />
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => alert('Filter pressed')}>
-                  <MaterialIcons name="filter-alt" size={24} color="black" />
-                </TouchableOpacity>
-              </View>
-            ),
-          })}
+          options={{
+            title: '',
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
-};
-export default App;
+}
+
 
