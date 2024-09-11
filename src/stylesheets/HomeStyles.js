@@ -47,5 +47,73 @@ export default StyleSheet.create({
     TransactionContent:{
         marginTop: "25%",
         marginLeft: "5%",
-    }
+    },
+
+    modal:{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+    },
+
+    modalcontainer: {
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        width: '80%',
+        minHeight: '20%',
+        maxHeight: '100%',
+      },
+
+      monthContainer: {
+        position: 'absolute',
+        flex: 1,
+        flexGrow: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        alignSelf: 'center',
+        // borderBottomWidth: 1,
+        // borderBottomColor: '#ccc',
+        height: 420, 
+        // paddingHorizontal: 5,
+        marginTop: 10,
+        marginBottom: 10,
+      },
+
+      monthButton: {
+        paddingVertical: 8,
+        paddingHorizontal: 15,
+        marginHorizontal: 4,
+        // backgroundColor: '#f0f0f0',
+        // borderRadius: 5,
+        alignItems: 'center',
+      },
+    
+      selectedMonthButton: {
+        backgroundColor: '#8DB580',
+        borderBottomWidth: 2,
+        borderBottomColor: '#004080',
+      },
+    
+      monthText: {
+        fontSize: 14,
+        color: 'black',
+      },
+    
+      selectedMonthText: {
+        color: 'white',
+      },
+    
+      modalOverlay: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark background to overlay the modal
+      },
+
+      noTransactionsText: {
+        alignSelf: "center",
+        marginTop: "5%",
+      }
 })

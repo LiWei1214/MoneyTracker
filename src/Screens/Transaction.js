@@ -6,6 +6,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import styles from '../stylesheets/TransactionStyles';
+import { Platform, NativeModules } from 'react-native';
 import { getDBConnection, createTransaction, getTransaction } from '../../data/db-service';
 
 LogBox.ignoreLogs([
@@ -71,34 +72,36 @@ const TransactionScreen = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [newTransaction, setNewTransaction] = useState({ categories: '', detail: '', amount: '' });
 
-  const [transactions, setTransactions] = useState([
-    { month: 0, detail: 'Bought groceries', amount: 'RM50', icon: 'local-grocery-store' },
-    { month: 0, detail: 'KUNKUN', amount: 'RM50', icon: 'fastfood' },
-    { month: 0, detail: 'OK', amount: 'RM50', icon: 'emoji-transportation' },
-    { month: 0, detail: 'AI', amount: 'RM50', icon: 'sports-soccer' },
-    { month: 1, detail: 'Paid rent', amount: 'RM1200', icon: 'local-grocery-store' },
-    { month: 2, detail: 'Car insurance', amount: 'RM100', icon: 'local-grocery-store' },
-  ]);
+  const [transactions, setTransactions] = useState(
+    // { month: 0, detail: 'Bought groceries', amount: 'RM50', icon: 'local-grocery-store' },
+    // { month: 0, detail: 'KUNKUN', amount: 'RM50', icon: 'fastfood' },
+    // { month: 0, detail: 'OK', amount: 'RM50', icon: 'emoji-transportation' },
+    // { month: 0, detail: 'AI', amount: 'RM50', icon: 'sports-soccer' },
+    // { month: 1, detail: 'Paid rent', amount: 'RM1200', icon: 'local-grocery-store' },
+    // { month: 2, detail: 'Car insurance', amount: 'RM100', icon: 'local-grocery-store' },
+    []
+  );
 
   const _insertTransaction = async () => {
-    await createTransaction(await getDBConnection(selectedMonth, newTransaction.detail, newTransaction.amount, newTransaction.categories))
+    await createTransaction(await getDBConnection(), selectedMonth, newTransaction.amount, newTransaction.detail, newTransaction.categories)
   }
 
   const _query = async () => {
-    setTransactions(await getTransaction(await getDBConnection()));
+    setTransactions(await getTransaction(await getDBConnection(), selectedMonth));
   }
 
-  useEffect(() => {
-    _query();
+  useEffect(()=>{
+    _query(selectedMonth);
   },[]);
 
-  const filteredTransactions = transactions.filter(
-    transaction => transaction.month === selectedMonth
+  const transactionIsEmpty = transactions === null ? true : false;
+  const filteredTransactions =  transactionIsEmpty ? 0 : transactions.filter(
+    transaction => transaction.transactionMonth === selectedMonth
   );
 
   const addTransaction = () => {
     setTransactions([...transactions, { ...newTransaction, month: selectedMonth }]);
-    _insertTransaction;
+    _insertTransaction();
     setModalVisible(false);
     setNewTransaction({ category: '', detail: '', amount: '' }); // Reset after adding
     setSelectedCategory(null); // Reset category after adding
@@ -118,9 +121,9 @@ const TransactionScreen = () => {
         {filteredTransactions.length > 0 ? (
           filteredTransactions.map((transaction, index) => (
             <View key={index} style={styles.transactionItem}>
-              <MaterialIcons name={transaction.icon} size={24} color="#8DB580" style={styles.transactionIcon} />
-              <Text style={styles.transactionDetail}>{transaction.detail}</Text>
-              <Text style={styles.transactionAmount}>{transaction.amount}</Text>
+              <MaterialIcons name={transaction.iconDir} size={24} color="#8DB580" style={styles.transactionIcon} />
+              <Text style={styles.transactionDetail}>{transaction.desc}</Text>
+              <Text style={styles.transactionAmount}>{transaction.transactionAmount}</Text>
             </View>
           ))
         ) : (
