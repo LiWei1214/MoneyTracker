@@ -8,10 +8,10 @@ import styles from "../stylesheets/HomeStyles";
 import { getDBConnection ,getTransaction } from "../../data/db-service";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+// import returnBudgets from "../components/LoadBudget";
 
 export default function Home({navigation}) {
     const [budgets, setBudgets] = useState([]);
-
     const [Balance, setBalance] = useState(0);
 
     const loadBudgets = async () => {

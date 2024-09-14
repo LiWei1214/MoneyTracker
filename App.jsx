@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import './gesture-handler'
 import { createStackNavigator } from "@react-navigation/stack";
 import  BottomTabNav from "./src/navigation/BottomTabNav";
+import LoginSignUp from "./src/Screens/LoginSignUpScreen";
 import { User, Appearance, DataPrivacy, Notification, Help } from "./src/Screens";
 
 const Stack = createStackNavigator();
@@ -11,7 +12,8 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="BottomTabNav">
+      <Stack.Navigator initialRouteName="LoginSignUp">
+        <Stack.Screen name="LoginSignUp" component={LoginSignUp}/>
         <Stack.Screen name="BottomTabNav" component={BottomTabNav} options={{headerShown: false}}/>
         <Stack.Screen name="Profile" component={User} options={{tabBarButtom: () => null}}/>
         <Stack.Screen name="Data" component={DataPrivacy} options={{tabBarButtom: () => null}}/>

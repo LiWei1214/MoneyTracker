@@ -6,7 +6,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import styles from '../stylesheets/TransactionStyles';
-import { Platform, NativeModules } from 'react-native';
+import MonthSelector from '../components/MonthSelector';
 import { getDBConnection, createTransaction, getTransaction } from '../../data/db-service';
 
 LogBox.ignoreLogs([
@@ -14,11 +14,6 @@ LogBox.ignoreLogs([
 ])
 
 const Stack = createStackNavigator();
-
-const months = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-];
 
 const categories = [
   { label: 'Groceries', icon: 'local-grocery-store' },
@@ -36,48 +31,6 @@ const categories = [
   { label: 'Other', icon: 'help' }
 ]
 
-const MonthSelector = ({ selectedMonth, onSelectMonth }) => {
-  const scrollViewRef = useRef(null);
-
-  useEffect(() => {
-    // Center the selected month in the scroll view when it is clicked
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({
-        x: selectedMonth * 80 - 150, // Adjust width of each button
-        animated: true,
-      });
-    }
-  }, [selectedMonth]);
-
-  return (
-    <ScrollView
-      ref={scrollViewRef}
-      horizontal
-      showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.monthContainer}
-    >
-      {months.map((month, index) => (
-        <TouchableOpacity
-          key={index}
-          style={[
-            styles.monthButton,
-            selectedMonth === index && styles.selectedMonthButton
-          ]}
-          onPress={() => onSelectMonth(index)}
-        >
-          <Text
-            style={[
-              styles.monthText,
-              selectedMonth === index && styles.selectedMonthText
-            ]}
-          >
-            {month}
-          </Text>
-        </TouchableOpacity>
-      ))}
-    </ScrollView>
-  );
-};
 
 const TransactionScreen = ( {route, navigation}) => {
   React.useEffect(() => {

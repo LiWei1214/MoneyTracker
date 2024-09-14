@@ -1,18 +1,49 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, View, Button, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TextInput, View, Button, Alert, ToastAndroid } from 'react-native';
+import { parse } from 'react-native-svg';
+import io, { connect, Socket } from "socket.io-client";
+
+var loginSocket = io('http://10.0.2.2:5000/login', {
+  transports: ['websocket'],
+});
+
+var registerSocket = io('http://10.0.2.2:5000/register', {
+  transports:['websocket']
+});
 
 // Login Screen Component
-function LoginScreen({ navigation }) {
+function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginStatus, setLoginStatus] = useState(Boolean);
 
   const handleLogin = () => {
-    if (email === 'test@example.com' && password === 'password123') {
-      Alert.alert('Login Successful', 'Welcome to Money Tracker!');
+    loginSocket.emit('client_login', email, password);
+    console.log(loginStatus);
+    if (loginStatus){
+      Alert.alert("Login Successful")
+      navigation.navigate('BottomTabNav');
     } else {
-      Alert.alert('Login Failed', 'Invalid email or password.');
+      Alert.alert("Login Failed")
     }
   };
+
+  useEffect(()=>{
+    loginSocket.on('connect', () => {
+      console.log(loginSocket.id);
+      loginSocket.emit('client_connected', {connected: true});
+      ToastAndroid.show('Connected to server', ToastAndroid.LONG);
+    });
+
+    loginSocket.on('error', error => {
+      ToastAndroid.show('Failed to connect to server', ToastAndroid.LONG);
+    });
+
+    loginSocket.on('server_send', data => {
+      let result = JSON.parse(data);
+      setLoginStatus(result.stateCheck);
+    });
+  },[]);
 
   return (
     <View style={styles.container}>
@@ -41,20 +72,47 @@ function LoginScreen({ navigation }) {
 }
 
 // Sign-Up Screen Component
-function SignUpScreen({ navigation }) {
+function SignUpScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [registerPassed, setRegisterPassed] = useState('');
 
   const handleSignUp = () => {
-    if (password === confirmPassword) {
-      // Add logic for sign-up here, like API call or storing credentials
-      Alert.alert('Sign Up Successful', 'Your account has been created.');
+    registerSocket.emit('client_send', email, username, password)
+    console.log(registerPassed);
+    if(registerPassed == "Account created"){
+      Alert.alert("Sign up successful.")
+      setEmail('')
+      setUsername('')
+      setPassword('')
       navigation.navigate('Login');
-    } else {
-      Alert.alert('Sign Up Failed', 'Passwords do not match.');
+    } else if (registerPassed == "Email format incorrect"){
+      Alert.alert('Email format incorrect.');
+    } else if (registerPassed == "User already exists"){
+      Alert.alert('User already exists');
+    } else if (registerPassed == "Email already exists"){
+      Alert.alert('Email already exists');
     }
   };
+
+  useEffect(()=>{
+    registerSocket.on('connect', () => {
+      console.log(registerSocket.id);
+      registerSocket.emit('client_connected', {connected: true});
+      ToastAndroid.show('Connected to server', ToastAndroid.LONG);
+    });
+
+    registerSocket.on('error', error => {
+      ToastAndroid.show('Failed to connect to server', ToastAndroid.LONG);
+    });
+
+    registerSocket.on('server_send', data => {
+      let result = JSON.parse(data);
+      setRegisterPassed(result.accountCreate);
+    });
+  },[]);
 
   return (
     <View style={styles.container}>
@@ -65,6 +123,13 @@ function SignUpScreen({ navigation }) {
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
         autoCapitalize="none"
       />
       <TextInput
@@ -89,11 +154,11 @@ function SignUpScreen({ navigation }) {
   );
 }
 
-export default function App() {
-  const [isLogin, setIsLogin] = useState(true);
+export default function LoginSignUp({navigation}: any) {
+  const [isLogin, setIsLogin] = useState(false);
 
   return isLogin ? (
-    <LoginScreen navigation={{ navigate: () => setIsLogin(false) }} />
+    <LoginScreen navigation={navigation} />
   ) : (
     <SignUpScreen navigation={{ navigate: () => setIsLogin(true) }} />
   );
