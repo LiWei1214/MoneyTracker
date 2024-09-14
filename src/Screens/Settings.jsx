@@ -59,10 +59,7 @@ export default function Settings({ navigation }){
                 </View>
                 <View style={styles.UserInfo}>
                     <Text style={{fontSize: 26, color: "black"}}>
-                        Ikun
-                    </Text>
-                    <Text style={{fontSize: 18, color: "black"}}>
-                        Ji Ni Tai Mei
+                        {userDisplayName}
                     </Text>
                 </View>
             </View>

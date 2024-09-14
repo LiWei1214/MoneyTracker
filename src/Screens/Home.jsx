@@ -122,7 +122,7 @@ export default function Home({navigation}) {
 
                 {/* User Greeting */}
                 <View style={styles.UserGreeting}>
-                    <Text style={{ color: "white", fontSize: 24 }}>Welcome Back, User</Text>
+                    <Text style={{ color: "white", fontSize: 24 }}>Welcome Back, {userDisplayName == '' ? "New User" : userDisplayName}</Text>
                 </View>
 
                 {/* Balance Box */}

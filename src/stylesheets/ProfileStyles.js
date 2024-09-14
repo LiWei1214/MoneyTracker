@@ -71,5 +71,51 @@ export default StyleSheet.create({
         backgroundColor: "white",
         padding: 10,
         borderRadius: 10
-    }
+    },
+
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.5)',
+      },
+
+      optionsModalContent: {
+        backgroundColor: 'white',
+        width: 250,
+        borderRadius: 10,
+        padding: 20,
+        alignItems: 'center',
+      },
+
+      optionButton: {
+        paddingVertical: 10,
+        width: '100%',
+        alignItems: 'center',
+      },
+
+      input: {
+        height: 40,
+        borderColor: '#8DB580',
+        borderWidth: 1,
+        marginBottom: 10,
+        paddingHorizontal: 10,
+        borderRadius: 5,
+      },
+      
+      modalContent: {
+        width: 300,
+        backgroundColor: 'white',
+        padding: 20,
+        borderRadius: 10,
+        alignItems: 'center',
+      },
+      modalTitle: {
+        fontSize: 18,
+        marginBottom: 10,
+      },
+      picker: {
+        width: 250,
+        height: 150,
+      },
 })

@@ -127,6 +127,18 @@ def handle_client_send_account(username, password):
             'stateCheck': False
         }))
 
+@socketio.on('client_get_account_info', namespace='/account_details')
+def handle_client_get_account_info(email):
+    db = get_db_connection()
+    cursor = db.cursor()
+    cursor.execute("SELECT accountname, email FROM userDetails WHERE email=?", [email])
+    user = cursor.fetchone()
+    if (user):
+        emit('server_send', json.dumps({
+            'username': user[0],
+            'email': user[1],
+        }))
+
 if __name__ == '__main__':
     create_userDetails_table()
     socketio.run(app, host='0.0.0.0', port=5000, debug=True)

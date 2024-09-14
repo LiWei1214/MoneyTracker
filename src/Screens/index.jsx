@@ -7,6 +7,7 @@ import Appearance from "./Appearance"
 import DataPrivacy from "./DataPrivacy"
 import Notification from "./Notification"
 import Help from "./Help"
+import ModifyDisplay from "./ModifyDisplay"
 
 export {
   Home,

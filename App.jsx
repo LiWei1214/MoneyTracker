@@ -6,6 +6,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import  BottomTabNav from "./src/navigation/BottomTabNav";
 import LoginSignUp from "./src/Screens/LoginSignUpScreen";
 import { User, Appearance, DataPrivacy, Notification, Help } from "./src/Screens";
+import "./src/Screens/global.js";
 
 const Stack = createStackNavigator();
 

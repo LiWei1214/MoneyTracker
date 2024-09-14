@@ -1,0 +1,2 @@
+global.emailG = '';
+global.userDisplayName = '';

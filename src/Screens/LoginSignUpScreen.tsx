@@ -15,35 +15,27 @@ var registerSocket = io('http://10.0.2.2:5000/register', {
 function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loginStatus, setLoginStatus] = useState(Boolean);
+  emailG = email;
 
   const handleLogin = () => {
     loginSocket.emit('client_login', email, password);
-    console.log(loginStatus);
-    if (loginStatus){
-      Alert.alert("Login Successful")
-      navigation.navigate('BottomTabNav');
-    } else {
-      Alert.alert("Login Failed")
-    }
   };
 
-  useEffect(()=>{
-    loginSocket.on('connect', () => {
-      console.log(loginSocket.id);
-      loginSocket.emit('client_connected', {connected: true});
-      ToastAndroid.show('Connected to server', ToastAndroid.LONG);
-    });
-
-    loginSocket.on('error', error => {
-      ToastAndroid.show('Failed to connect to server', ToastAndroid.LONG);
-    });
-
+  useEffect(() => {
     loginSocket.on('server_send', data => {
       let result = JSON.parse(data);
-      setLoginStatus(result.stateCheck);
+      if (result.stateCheck) {
+        Alert.alert("Login Successful");
+        navigation.navigate('BottomTabNav');
+      } else {
+        Alert.alert("Login Failed");
+      }
     });
-  },[]);
+
+    return () => {
+      loginSocket.off('server_send');
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -77,42 +69,41 @@ function SignUpScreen({ navigation }: any) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [registerPassed, setRegisterPassed] = useState('');
 
   const handleSignUp = () => {
-    registerSocket.emit('client_send', email, username, password)
-    console.log(registerPassed);
-    if(registerPassed == "Account created"){
-      Alert.alert("Sign up successful.")
-      setEmail('')
-      setUsername('')
-      setPassword('')
-      navigation.navigate('Login');
-    } else if (registerPassed == "Email format incorrect"){
-      Alert.alert('Email format incorrect.');
-    } else if (registerPassed == "User already exists"){
-      Alert.alert('User already exists');
-    } else if (registerPassed == "Email already exists"){
-      Alert.alert('Email already exists');
-    }
+    registerSocket.emit('client_send', email, username, password);
   };
 
-  useEffect(()=>{
-    registerSocket.on('connect', () => {
-      console.log(registerSocket.id);
-      registerSocket.emit('client_connected', {connected: true});
-      ToastAndroid.show('Connected to server', ToastAndroid.LONG);
-    });
-
-    registerSocket.on('error', error => {
-      ToastAndroid.show('Failed to connect to server', ToastAndroid.LONG);
-    });
-
+  useEffect(() => {
     registerSocket.on('server_send', data => {
       let result = JSON.parse(data);
-      setRegisterPassed(result.accountCreate);
+
+      switch (result.accountCreate) {
+        case "Account created":
+          Alert.alert("Sign up successful.");
+          setEmail('');
+          setUsername('');
+          setPassword('');
+          navigation.navigate('Login');
+          break;
+        case "Email format incorrect":
+          Alert.alert('Email format incorrect.');
+          break;
+        case "User already exists":
+          Alert.alert('User already exists');
+          break;
+        case "Email already exists":
+          Alert.alert('Email already exists');
+          break;
+        default:
+          Alert.alert('An unknown error occurred.');
+      }
     });
-  },[]);
+
+    return () => {
+      registerSocket.off('server_send');
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
