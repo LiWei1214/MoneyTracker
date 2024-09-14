@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { Text, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import './gesture-handler'
@@ -14,7 +14,6 @@ export default function App() {
       <Stack.Navigator initialRouteName="BottomTabNav">
         <Stack.Screen name="BottomTabNav" component={BottomTabNav} options={{headerShown: false}}/>
         <Stack.Screen name="Profile" component={User} options={{tabBarButtom: () => null}}/>
-        <Stack.Screen name="Appearance" component={Appearance} options={{tabBarButtom: () => null}}/>
         <Stack.Screen name="Data" component={DataPrivacy} options={{tabBarButtom: () => null}}/>
         <Stack.Screen name="Notification" component={Notification} options={{tabBarButtom: () => null}}/>
         <Stack.Screen name="Help" component={Help} options={{tabBarButtom: () => null}}/>

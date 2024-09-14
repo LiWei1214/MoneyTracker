@@ -7,8 +7,32 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import styles from "../stylesheets/HomeStyles";
 import { getDBConnection ,getTransaction } from "../../data/db-service";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Home() {
+export default function Home({navigation}) {
+    const [budgets, setBudgets] = useState([]);
+
+    const [Balance, setBalance] = useState(0);
+
+    const loadBudgets = async () => {
+        try {
+            const storedBudgets = await AsyncStorage.getItem('budgets');
+            if (storedBudgets) {
+                setBudgets(JSON.parse(storedBudgets));
+            }
+        } catch (error) {
+            console.error("Error loading budgets from storage:", error);
+        }
+    };
+
+    React.useEffect(() => {
+        const checkUpdateContent = navigation.addListener('focus', () => {
+            _query(selectedMonth);
+            loadBudgets();
+        });
+        return checkUpdateContent;
+    }, [navigation]);
+
     const [isDayModalVisible, setIsDayModalVisible] = useState(false);
     const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
 
@@ -63,14 +87,30 @@ export default function Home() {
     setTransactions(await getTransaction(await getDBConnection(), selectedMonth));
     };
 
-    useEffect(()=>{
-    _query(selectedMonth);
-    },[]);
-
     const transactionIsEmpty = transactions === null ? true : false;
     const filteredTransactions = transactionIsEmpty ? 0 : transactions.filter(
         transaction => transaction.transactionMonth === selectedMonth
     );
+
+    const calculateBalance = () => {
+        let totalBudget = 0;
+        budgets.map((budget) => {
+            totalBudget += budget.amount
+        });
+        let totalExpense = 0;
+        filteredTransactions.map((transaction) => {
+            totalExpense += transaction.transactionAmount
+        });
+        let calculatedBalance = totalBudget - totalExpense
+        if (calculatedBalance < 0) {
+            calculatedBalance = 0
+        }
+        return calculatedBalance;
+    };
+
+    useEffect(()=>{
+        _query(selectedMonth);
+    },[]);
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -102,7 +142,9 @@ export default function Home() {
                         </Text>
                     </View>
                     <View style={{ height: "50%" }}>
-                        <Text style={{ marginLeft: "7%", fontSize: 28, color: "white" }}>RM 1000.00</Text>
+                        <Text style={{ marginLeft: "7%", fontSize: 28, color: "white" }}>
+                            RM {calculateBalance()}
+                        </Text>
                     </View>
                     <View style={{ height: "20%", flexDirection: "row" }}>
                         <View style={{ width: "80%" }}>
@@ -171,15 +213,23 @@ export default function Home() {
                                 filteredTransactions.map((transaction, index) => (
                                     <View style={{
                                         flexDirection: "row",
-                                        marginLeft: "5%",
-                                        marginTop: "5%",
+                                        marginLeft: "3%",
+                                        paddingLeft: "2%",
+                                        marginRight: "7%",
+                                        paddingRight: "7%",
+                                        marginTop: "3%",
+                                        paddingTop: "2%",
+                                        marginBottom: "3%",
+                                        paddingBottom: "2%",
                                         alignItems: "center",
+                                        backgroundColor: "#f0f0f0",
+                                        borderRadius: 5
                                         }}>
-                                        <Text style={{ width: "20%" }}>Icon</Text>
-                                        <View style={{ width: "50%" }}>
-                                            <Text style={{ color: "black", fontSize: 20 }}>{transaction.desc}</Text>
+                                        <MaterialIcons name={transaction.iconDir} size={30} color="#8DB580"/>
+                                        <View style={{ width: "80%"}}>
+                                            <Text style={{ color: "black", fontSize: 20, marginLeft: "10%" }}>{transaction.desc}</Text>
                                         </View>
-                                        <Text style={{ fontSize: 15, color: "black" }}> RM {transaction.transactionAmount}</Text>
+                                        <Text style={{ fontSize: 15, color: "black"}}> RM {transaction.transactionAmount}</Text>
                                     </View>
                                 ))
                             ) : (

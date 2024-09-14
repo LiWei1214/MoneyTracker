@@ -29,7 +29,6 @@ export default function Settings({ navigation }){
 
     const settingItems = [
         {icon: "person-outline", text: "Account", action: navigateToEditAccount},
-        {icon: "invert-colors", text: "Appearance", action: navigateToEditAppearance},
         {icon: "folder-open", text: "Data Privacy", action: navigateToDataPrivacy},
         {icon: "notifications-none", text: "Notifications", action: navigateToEditNotification},
         {icon: "help-outline", text: "Help", action: navigateToHelp}

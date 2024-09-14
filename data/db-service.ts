@@ -76,6 +76,20 @@ export const deleteTransaction = async(
     }
 }
 
+export const clearTransaction = async(
+    db : SQLiteDatabase
+) => {
+    try{
+        const query = 'DROP TABLE transactions';
+        await db.executeSql(query);
+        const createTable = 'CREATE TABLE transactions(id INTEGER PRIMARY KEY, transactionMonth INTEGER NOT NULL, transactionAmount text NOT NULL, desc text, iconDir text NOT NULL)';
+        await db.executeSql(createTable);
+    } catch (error) {
+        console.error(error);
+        throw Error("Failed in clearing transactions");
+    }
+}
+
 const openCallback = () => {
     console.log('database open success');
 }

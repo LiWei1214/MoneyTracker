@@ -68,9 +68,18 @@ export default StyleSheet.create({
     marginBottom: 8,
   },
 
+  transactionLeft: {
+    flexDirection: 'row',             // Icon and text in one row
+    alignItems: 'center',
+  },
+
   transactionDetail: {
     fontSize: 16,
     color: 'black',
+  },
+
+  transactionIcon: {
+    marginRight: 10,                  // Space between icon and text
   },
 
   transactionAmount: {
@@ -165,5 +174,36 @@ export default StyleSheet.create({
     textAlign: 'center',
     padding: 10,
     textDecorationLine: 'underline'
+  },
+
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  optionsModalContent: {
+    backgroundColor: 'white',
+    width: 250,
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+  },
+  optionButton: {
+    paddingVertical: 10,
+    width: '100%',
+    alignItems: 'center',
+  },
+  optionText: {
+    fontSize: 18,
+    color: 'black',
+  },
+
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 10,
+    marginVertical: 10,
   }
 });

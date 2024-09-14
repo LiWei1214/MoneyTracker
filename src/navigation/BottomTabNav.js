@@ -3,6 +3,7 @@ import { View, Text, Stylesheet } from 'react-native';
 import { Home, Transaction, Balance, Settings } from '../Screens';
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Entypo from "react-native-vector-icons/Entypo";
+import BalanceStack from "../Screens/Balance";
 
 const Tab = createMaterialTopTabNavigator();
 const screenOptions = {
@@ -54,7 +55,7 @@ const BottomTabNav = () => {
             />
             <Tab.Screen
                 name="Balance"
-                component={Balance}
+                component={BalanceStack}
                 options={{
                     tabBarIcon: ({ focused }) => {
                         return (
